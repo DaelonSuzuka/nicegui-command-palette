@@ -32,3 +32,6 @@ tests:
 
 coverage:
 	$(VENV_PYTHON) -m pytest --cov
+
+clean:
+	rm -rf dist
