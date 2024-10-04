@@ -63,3 +63,4 @@ ui.run()
 - highlighting substring matches like in VSCode
 - additional functions like specific prompts?
 - improve matching algorithm
+- figure out how to use the user fixture with dialogs
