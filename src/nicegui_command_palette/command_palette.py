@@ -27,8 +27,13 @@ class CommandTable(ui.table, component='command_table.vue'):
     def get_selection(self):
         return self.selected[0]['value']
 
-    def add_item(self, value):
-        row = {'value': value, 'id': len(self.items), 'ratio': 1}
+    def add_item(self, value: str, display: str = None):
+        row = {
+            'value': value,
+            'display': display if display else value,
+            'id': len(self.items),
+            'ratio': 1,
+        }
         self.items.append(row)
         self.add_row(row)
 
@@ -76,8 +81,8 @@ class CommandPalette(ui.dialog):
         value = e.args['value']
         self.submit(value)
 
-    def add_item(self, value: str):
-        self.table.add_item(value)
+    def add_item(self, value: str, display: str = None):
+        self.table.add_item(value, display)
 
     def add_items(self, values: list[str] | dict[str, str]):
         if isinstance(values, list):
@@ -85,7 +90,7 @@ class CommandPalette(ui.dialog):
                 self.table.add_item(value)
         if isinstance(values, dict):
             for k, v in values.items():
-                self.table.add_item(v)
+                self.table.add_item(k, v)
 
     def handle_key(self, e: GenericEventArguments):
         if e.args['key'] == 'Enter':
