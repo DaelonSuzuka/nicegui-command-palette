@@ -1,0 +1,47 @@
+[project]
+name = "nicegui-command-palette"
+version = "0.1.0"
+description = "A command palette for NiceGUI applications"
+readme = "README.md"
+authors = [{ name = "David Kincaid", email = "daelonsuzuka@gmail.com" }]
+license = { file = "LICENSE" }
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Widget Sets",
+    "Operating System :: OS Independent",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+requires-python = ">=3.12"
+dependencies = ["nicegui"]
+
+[project.urls]
+Homepage = "https://github.com/DaelonSuzuka/nicegui-command-palette"
+Repository = "https://github.com/DaelonSuzuka/nicegui-command-palette"
+Issues = "https://github.com/DaelonSuzuka/nicegui-command-palette/issues"
+
+[tool.ruff.format]
+quote-style = "single"
+
+[tool.uv]
+dev-dependencies = [
+    "pytest",
+    "pytest-asyncio",
+    "pytest-selenium",
+    "pytest-cov",
+    "twine",
+    "webdriver-manager",
+]
+
+[tool.pytest.ini_options]
+addopts = "--driver Chrome"
+asyncio_mode = "auto"
+testpaths = ["test"]
+
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
