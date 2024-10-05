@@ -28,10 +28,10 @@ class CommandTable(ui.table, component='command_table.vue'):
     def get_selection(self):
         return self.selected[0]['value']
 
-    def add_item(self, value: str, display: str = None):
+    def add_item(self, value: str, label: str = None):
         row = {
             'value': value,
-            'display': display if display else value,
+            'label': label if label else value,
             'id': len(self.items),
             'ratio': 1,
         }
@@ -39,17 +39,19 @@ class CommandTable(ui.table, component='command_table.vue'):
         self.add_row(row)
 
     def sort(self, target: str):
+        target = target.lower()
         for item in self.items:
-            item['ratio'] = SequenceMatcher(a=item['value'], b=target).ratio()
-            if target not in item['value']:
+            label = item['label'].lower()
+            item['ratio'] = SequenceMatcher(a=label, b=target).ratio()
+            if target.lower() not in label:
                 item['ratio'] = 0
 
         if target:
             self.items.sort(key=lambda x: x['ratio'], reverse=True)
+            items = filter(lambda x: x['ratio'] > 0, self.items)
         else:
-            self.items.sort(key=lambda x: x['id'], reverse=True)
-
-        items = filter(lambda x: x['ratio'] > 0, self.items)
+            self.items.sort(key=lambda x: x['id'])
+            items = self.items
 
         self.update_rows(items, clear_selection=False)
         self.current_selection = 0
@@ -118,7 +120,7 @@ class CommandPalette(ui.dialog):
     def __await__(self):
         self.table.set_selection()
 
-        items = list(map(lambda x: x['value'], self.table.items))
+        items = [c.label for c in self.commands.values()]
         self.text.set_autocomplete(items)
 
         return super().__await__()
