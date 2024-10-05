@@ -39,17 +39,15 @@ class CommandTable(ui.table, component='command_table.vue'):
         self.add_row(row)
 
     def sort(self, target: str):
-        if target:
-            for item in self.items:
-                item['ratio'] = SequenceMatcher(a=item['value'], b=target).ratio()
-                if target not in item['value']:
-                    item['ratio'] = 0
-        else:
-            # if target is "", match everything
-            for item in self.items:
-                item['ratio'] = 1
+        for item in self.items:
+            item['ratio'] = SequenceMatcher(a=item['value'], b=target).ratio()
+            if target not in item['value']:
+                item['ratio'] = 0
 
-        self.items.sort(key=lambda x: x['ratio'], reverse=True)
+        if target:
+            self.items.sort(key=lambda x: x['ratio'], reverse=True)
+        else:
+            self.items.sort(key=lambda x: x['id'], reverse=True)
 
         items = filter(lambda x: x['ratio'] > 0, self.items)
 
