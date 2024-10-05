@@ -56,8 +56,19 @@ class CommandTable(ui.table, component='command_table.vue'):
         self.set_selection()
 
 
+class Command:
+    def __init__(self, name: str, label: str = None, cb=None) -> None:
+        self.name = name
+        self.label = label if label else name
+        self.cb = cb
+
+    def execute(self):
+        if self.cb:
+            self.cb()
+
+
 class CommandPalette(ui.dialog):
-    def __init__(self, options: list[str] | dict[str, str] = None) -> None:
+    def __init__(self, commands: list[str | Command] = None) -> None:
         super().__init__(value=True)
 
         self.props('transition-duration=0')
@@ -70,30 +81,35 @@ class CommandPalette(ui.dialog):
         self.on('keydown', self.handle_key)
         self.table.on('row_clicked', self.row_clicked)
 
-        if options is not None:
-            self.add_items(options)
+        self.commands: dict[str, Command] = {}
+        if commands is not None:
+            for c in commands:
+                self.add_command(c)
 
     def on_change(self, e: ValueChangeEventArguments):
         self.table.sort(e.value)
 
     def row_clicked(self, e: GenericEventArguments):
         value = e.args['value']
-        self.submit(value)
+        self.execute_command(value)
 
-    def add_item(self, value: str, display: str = None):
-        self.table.add_item(value, display)
+    def add_command(self, command: str | Command, label: str = None, cb=None):
+        if isinstance(command, str):
+            command = Command(command, label, cb)
 
-    def add_items(self, values: list[str] | dict[str, str]):
-        if isinstance(values, list):
-            for value in values:
-                self.table.add_item(value)
-        if isinstance(values, dict):
-            for k, v in values.items():
-                self.table.add_item(k, v)
+        self.table.add_item(command.name, command.label)
+
+        self.commands[command.name] = command
+
+    def execute_command(self, name: str):
+        if cmd := self.commands.get(name, None):
+            cmd.execute()
+
+        self.submit(name)
 
     def handle_key(self, e: GenericEventArguments):
         if e.args['key'] == 'Enter':
-            self.submit(self.table.get_selection())
+            self.execute_command(self.table.get_selection())
         if e.args['key'] == 'ArrowUp':
             self.table.select_up()
         if e.args['key'] == 'ArrowDown':
