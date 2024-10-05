@@ -1,6 +1,6 @@
 [project]
 name = "nicegui-command-palette"
-version = "0.3.0"
+version = "0.3.1"
 description = "A command palette for NiceGUI applications"
 readme = "README.md"
 authors = [{ name = "David Kincaid", email = "daelonsuzuka@gmail.com" }]
@@ -28,6 +28,7 @@ Issues = "https://github.com/DaelonSuzuka/nicegui-command-palette/issues"
 quote-style = "single"
 
 [tool.uv]
+package = true
 dev-dependencies = [
     "pytest",
     "pytest-asyncio",

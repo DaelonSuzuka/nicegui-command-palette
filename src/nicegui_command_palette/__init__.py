@@ -1,1 +1,1 @@
-from .command_palette import CommandPalette
+from .command_palette import CommandPalette, Command
