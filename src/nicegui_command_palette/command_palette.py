@@ -22,7 +22,8 @@ class CommandTable(ui.table, component='command_table.vue'):
         self.set_selection()
 
     def set_selection(self):
-        self.selected = [self.items[self.current_selection]]
+        if self.items:
+            self.selected = [self.items[self.current_selection]]
 
     def get_selection(self):
         return self.selected[0]['value']
