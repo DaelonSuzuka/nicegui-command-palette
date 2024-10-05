@@ -10,44 +10,45 @@ pip install nicegui-command-palette
 
 ## Usage
 
+Register commands to the `CommandPalette` as a list of either strings or `Command` objects.
+
+A `Command` can have a callback attached, which could be cleaner than checking the `CommandPalette`'s result.
+
+Open the `CommandPalette` by `await`ing it. The returned value is the name of the command selected by the user, or `None` if they dismissed the palette without selecting anything.
+
 ```py
-from command_palette import CommandPalette
+from command_palette import CommandPalette, Command
 
-# create the palette
-cmd = CommandPalette()
-# add items
-cmd.add_item('one')
-cmd.add_item('two')
-# then open the palette by awaiting it
-result = await cmd
-ui.notify(result)
+def some_action():
+    ui.notify('User picked the third option!')
 
-# OR create your options as a list
-options = ['one', 'two']
-# then create the palette and immediately await it
-if result := await CommandPalette(options):
-    ui.notify(result)
+commands = [
+    'one',
+    Command('two', 'Second'),
+    Command('three', 'Third', cb=some_action),
+]
 
-# OR create your options as a dict
-# return value: display value
-options = {
-    'one': 'The First Option',
-    'two': 'A Second Option',
-}
+if result := await CommandPalette(commands):
+    # result is the name of the user's selection, or None
+    ui.notify(f'Selected: {result}')
 ```
 
 Full example:
 ```py
 from nicegui import ui
 from nicegui.events import KeyEventArguments
-from command_palette import CommandPalette
+from command_palette import CommandPalette, Command
 
 async def handle_key(e: KeyEventArguments):
-    if e.action.keydown and e.modifiers.shift and e.modifiers.ctrl and e.key == 'P':
- 
-        options = ['one', 'two']
-        if result := await CommandPalette(options):
-            ui.notify(result, position='bottom-right')
+    # open the command palette when the user presses ctrl+shift+p
+    if e.action.keydown and e.modifiers.ctrl and e.modifiers.shift and e.key == 'P':
+        commands = [
+            'one',
+            Command('two', 'Second'),
+            Command('three', 'Third', cb=some_action),
+        ]
+        if result := await CommandPalette(commands):
+            ui.notify(result)
 
 ui.keyboard(on_key=handle_key)
 
@@ -55,7 +56,7 @@ ui.run()
 ```
 
 # Screenshots
-![screenshot](screenshots/palette.png)
+![screenshot](screenshots/palette_open.png)
 ![usage](screenshots/usage.gif)
 
 # Todo
