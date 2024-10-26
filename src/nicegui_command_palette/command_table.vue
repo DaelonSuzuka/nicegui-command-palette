@@ -10,3 +10,16 @@
         </template>
     </q-table>
 </template>
+
+<script>
+export default {
+  data () {
+    return {
+      c: 0,
+    }
+  },
+  methods: {
+    inc() {this.c+=1;}
+  }
+}
+</script>
