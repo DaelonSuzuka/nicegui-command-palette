@@ -1,6 +1,6 @@
 [project]
 name = "nicegui-command-palette"
-version = "0.3.1"
+version = "0.3.2"
 description = "A command palette for NiceGUI applications"
 readme = "README.md"
 authors = [{ name = "David Kincaid", email = "daelonsuzuka@gmail.com" }]
