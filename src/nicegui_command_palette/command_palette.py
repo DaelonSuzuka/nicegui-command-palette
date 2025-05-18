@@ -10,25 +10,25 @@ class CommandTable(ui.table, component='command_table.vue'):
             # {'name': 'ratio', 'label': 'ratio', 'field': 'ratio', 'align': 'right'},
         ]
         super().__init__(rows=[], columns=columns, row_key='id')
-        self.items = []
+        self.items: list[dict] = []
         self.current_selection = 0
 
     def select_up(self):
         self.current_selection = max(self.current_selection - 1, 0)
-        self.set_selection()
+        self.apply_selection()
 
     def select_down(self):
         self.current_selection = min(self.current_selection + 1, len(self.items) - 1)
-        self.set_selection()
+        self.apply_selection()
 
-    def set_selection(self):
+    def apply_selection(self):
         if self.items:
             self.selected = [self.items[self.current_selection]]
 
     def get_selection(self):
         return self.selected[0]['value']
 
-    def add_item(self, value: str, label: str = None):
+    def add_item(self, value: str, label: str | None = None):
         row = {
             'value': value,
             'label': label if label else value,
@@ -48,18 +48,18 @@ class CommandTable(ui.table, component='command_table.vue'):
 
         if target:
             self.items.sort(key=lambda x: x['ratio'], reverse=True)
-            items = filter(lambda x: x['ratio'] > 0, self.items)
+            items: list[dict] = list(filter(lambda x: x['ratio'] > 0, self.items))
         else:
             self.items.sort(key=lambda x: x['id'])
             items = self.items
 
         self.update_rows(items, clear_selection=False)
         self.current_selection = 0
-        self.set_selection()
+        self.apply_selection()
 
 
 class Command:
-    def __init__(self, name: str, label: str = None, cb=None) -> None:
+    def __init__(self, name: str, label: str | None = None, cb=None) -> None:
         self.name = name
         self.label = label if label else name
         self.cb = cb
@@ -69,8 +69,19 @@ class Command:
             self.cb()
 
 
+class ConfirmationPopup(ui.dialog):
+    def __init__(self):
+        super().__init__(value=True)
+        self.props('persistent')
+        with self, ui.card():
+            ui.label('Are you sure you want to do that?').classes('text-lg')
+            with ui.row():
+                ui.button('Yes', on_click=lambda: self.submit(True))
+                ui.button('No', on_click=lambda: self.submit(False))
+
+
 class CommandPalette(ui.dialog):
-    def __init__(self, commands: list[str | Command] = None) -> None:
+    def __init__(self, commands: list[str | Command] | None = None) -> None:
         super().__init__(value=True)
 
         self.props('transition-duration=0')
@@ -95,7 +106,7 @@ class CommandPalette(ui.dialog):
         value = e.args['value']
         self.execute_command(value)
 
-    def add_command(self, command: str | Command, label: str = None, cb=None):
+    def add_command(self, command: str | Command, label: str | None = None, cb=None):
         if isinstance(command, str):
             command = Command(command, label, cb)
 
@@ -118,7 +129,7 @@ class CommandPalette(ui.dialog):
             self.table.select_down()
 
     def __await__(self):
-        self.table.set_selection()
+        self.table.apply_selection()
 
         items = [c.label for c in self.commands.values()]
         self.text.set_autocomplete(items)
