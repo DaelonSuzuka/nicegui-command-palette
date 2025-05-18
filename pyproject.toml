@@ -24,6 +24,9 @@ Homepage = "https://github.com/DaelonSuzuka/nicegui-command-palette"
 Repository = "https://github.com/DaelonSuzuka/nicegui-command-palette"
 Issues = "https://github.com/DaelonSuzuka/nicegui-command-palette/issues"
 
+[tool.ruff]
+line-length = 120
+
 [tool.ruff.format]
 quote-style = "single"
 
